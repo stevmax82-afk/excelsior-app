@@ -201,6 +201,24 @@ function KnowledgeChip({ t, k, onOpen }) {
   );
 }
 
+function OfferChip({ t, p, onOpen }) {
+  const [failed, setFailed] = React.useState(false);
+  const showImg = p.img && !failed;
+  return (
+    <Card t={t} pad={0} onClick={onOpen} style={{ width: 204, flexShrink: 0, overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 96, background: `linear-gradient(140deg, ${p.tint}, ${hexA(p.tint, 0.6)})` }}>
+        {showImg && <img src={p.img} alt={p.brand} loading="lazy" onError={() => setFailed(true)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+        {showImg && <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(140deg, ${hexA(p.tint, 0.5)}, ${hexA('#000', 0.32)})`, mixBlendMode: 'multiply' }} />}
+        <div style={{ position: 'absolute', top: 10, left: 10, padding: '4px 10px', borderRadius: 999, background: hexA('#000', 0.3), backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', border: `1px solid ${hexA('#fff', 0.22)}`, color: '#fff', fontFamily: t.fonts.titling, fontSize: 9.5, letterSpacing: 1.4, textTransform: 'uppercase' }}>{p.cat}</div>
+      </div>
+      <div style={{ padding: 13 }}>
+        <div style={{ fontFamily: t.fonts.display, fontSize: 16, fontWeight: 600, lineHeight: 1.2, letterSpacing: t.fonts.isSerifDisplay ? 0 : -0.2 }}>{p.brand}</div>
+        <div style={{ fontFamily: t.fonts.sans, fontSize: 12, color: t.mute, marginTop: 4, lineHeight: 1.35 }}>{p.offer}</div>
+      </div>
+    </Card>
+  );
+}
+
 function FeedItem({ t, item, member, onOpen }) {
   const toneMap = { Ask: '#3C5A78', Win: '#2E5E4E', Offer: '#9A6B3A' };
   return (
@@ -311,6 +329,16 @@ function HomeScreen({ t, nav }) {
         </div>
       </div>
 
+      {/* offers */}
+      <div style={{ paddingTop: 26 }}>
+        <div style={{ padding: `0 ${t.pad}px` }}>
+          <SectionLabel t={t} action="All offers" onAction={() => nav.push('perks', {})}>Offers &amp; privileges</SectionLabel>
+        </div>
+        <div style={{ display: 'flex', gap: 12, overflowX: 'auto', padding: `0 ${t.pad}px 4px`, scrollbarWidth: 'none' }}>
+          {D.PERKS.map((p) => <OfferChip key={p.id} t={t} p={p} onOpen={() => nav.push('perks', {})} />)}
+        </div>
+      </div>
+
       {/* feed */}
       <div style={{ padding: `26px ${t.pad}px 0` }}>
         <SectionLabel t={t} action="Open feed" onAction={() => nav.tab('network')}>From the membership</SectionLabel>
@@ -347,4 +375,4 @@ function HomeScreen({ t, nav }) {
   );
 }
 
-Object.assign(window, { Onboarding, HomeScreen, EventImage, EventHeroCard, IntroCard, KnowledgeChip, FeedItem, MemberRow });
+Object.assign(window, { Onboarding, HomeScreen, EventImage, EventHeroCard, IntroCard, KnowledgeChip, OfferChip, FeedItem, MemberRow });

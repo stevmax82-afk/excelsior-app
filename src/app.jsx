@@ -91,6 +91,7 @@ function App() {
       case 'inbox': return <InboxScreen {...p} />;
       case 'card': return <CardScreen {...p} />;
       case 'event': return <EventDetail {...p} />;
+      case 'requestEvent': return <RequestEventScreen {...p} />;
       case 'member': return <MemberProfile {...p} />;
       case 'thread': return <ThreadScreen {...p} />;
       case 'knowledge': return <KnowledgeScreen {...p} />;

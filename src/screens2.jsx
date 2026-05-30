@@ -94,14 +94,106 @@ function EventsScreen({ t, nav }) {
   if (filter === 'Yours') list = D.EVENTS.filter((e) => mine.includes(e.id));
   return (
     <div>
-      <ScreenTitle t={t} sub="Curated experiences" title="Events" />
+      <ScreenTitle t={t} sub="Curated experiences" title="Events" right={
+        <EXButton t={t} size="sm" variant="accentGhost" icon="plus" onClick={() => nav.push('requestEvent', {})}>Request</EXButton>
+      } />
       <div style={{ padding: `4px ${t.pad}px 16px` }}>
         <Segmented t={t} options={['Upcoming', 'Curated', 'Knowledge', 'Yours']} value={filter} onChange={setFilter} />
       </div>
       <div style={{ padding: `0 ${t.pad}px` }}>
         {list.map((ev) => <EventCard key={ev.id} t={t} ev={ev} mine={mine.includes(ev.id)} onOpen={() => nav.push('event', { id: ev.id })} />)}
       </div>
+
+      {/* request-an-event CTA */}
+      <div style={{ padding: `8px ${t.pad}px 0` }}>
+        <Card t={t} onClick={() => nav.push('requestEvent', {})} style={{ display: 'flex', alignItems: 'center', gap: 14, borderStyle: 'dashed' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: t.accentSoft, border: `1px solid ${t.accentLine}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <EXIcon name="spark" size={22} color={t.accent} sw={1.7} />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: t.fonts.display, fontSize: 17, fontWeight: 600, lineHeight: 1.2 }}>Have a gathering in mind?</div>
+            <div style={{ fontFamily: t.fonts.sans, fontSize: 13, color: t.mute, marginTop: 2 }}>Propose an event and our curation team will arrange it.</div>
+          </div>
+          <EXIcon name="chevR" size={18} color={t.faint} />
+        </Card>
+      </div>
       <div style={{ height: 16 }} />
+    </div>
+  );
+}
+
+function RequestEventScreen({ t, nav }) {
+  const [sent, setSent] = React.useState(false);
+  const [format, setFormat] = React.useState('Private dinner');
+  const [size, setSize] = React.useState('6–12');
+  const formats = ['Private dinner', 'Roundtable', 'Masterclass', 'Social', 'Other'];
+  const sizes = ['6–12', '12–25', '25–50', '50+'];
+
+  const Field = ({ label, value }) => (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontFamily: t.fonts.titling, fontSize: 11, letterSpacing: 1.8, textTransform: 'uppercase', color: t.mute, marginBottom: 7 }}>{label}</div>
+      <div style={{ padding: '14px 16px', borderRadius: t.radiusSm, border: `1px solid ${t.line}`, background: t.surface, fontFamily: t.fonts.sans, fontSize: 15, color: t.faint }}>{value}</div>
+    </div>
+  );
+  const Pills = ({ options, value, onChange }) => (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+      {options.map((o) => {
+        const on = o === value;
+        return (
+          <button key={o} onClick={() => onChange(o)} style={{
+            padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
+            fontFamily: t.fonts.sans, fontSize: 13, fontWeight: 600,
+            background: on ? t.accentSoft : 'transparent', color: on ? t.accent : t.mute,
+            border: `1px solid ${on ? t.accentLine : t.line}`,
+          }}>{o}</button>
+        );
+      })}
+    </div>
+  );
+
+  if (sent) {
+    return (
+      <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+        <PushHeader t={t} title="Request an event" onBack={nav.pop} />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 36px', textAlign: 'center' }}>
+          <div style={{ width: 78, height: 78, borderRadius: '50%', border: `1px solid ${t.accentLine}`, display: 'flex', alignItems: 'center', justifyContent: 'center', background: t.accentSoft }}>
+            <EXIcon name="check" size={34} color={t.accent} sw={1.6} />
+          </div>
+          <h1 style={{ fontFamily: t.fonts.display, fontWeight: 600, fontSize: 28, margin: '26px 0 10px' }}>Request received.</h1>
+          <p style={{ fontFamily: t.fonts.sans, fontSize: 15, color: t.mute, lineHeight: 1.6, maxWidth: 290, margin: 0 }}>
+            Our curation team will be in touch within two working days to shape the details with you.
+          </p>
+          <div style={{ marginTop: 34 }}>
+            <EXButton t={t} size="md" variant="accentGhost" icon="arrowR" onClick={nav.pop}>Back to events</EXButton>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <PushHeader t={t} title="Request an event" onBack={nav.pop} />
+      <div style={{ padding: `8px ${t.pad}px 120px` }}>
+        <h1 style={{ fontFamily: t.fonts.display, fontWeight: 600, fontSize: 26, margin: '4px 0 8px', letterSpacing: t.fonts.isSerifDisplay ? 0 : -0.4 }}>Propose a gathering.</h1>
+        <p style={{ fontFamily: t.fonts.sans, fontSize: 14.5, color: t.mute, lineHeight: 1.55, margin: '0 0 24px' }}>
+          Tell us what you have in mind. Members can propose dinners, roundtables and experiences for the Club to host.
+        </p>
+
+        <div style={{ fontFamily: t.fonts.titling, fontSize: 11, letterSpacing: 1.8, textTransform: 'uppercase', color: t.mute, marginBottom: 10 }}>Format</div>
+        <Pills options={formats} value={format} onChange={setFormat} />
+
+        <div style={{ fontFamily: t.fonts.titling, fontSize: 11, letterSpacing: 1.8, textTransform: 'uppercase', color: t.mute, marginBottom: 10 }}>Preferred size</div>
+        <Pills options={sizes} value={size} onChange={setSize} />
+
+        <Field label="Theme or topic" value="e.g. Family offices investing in climate" />
+        <Field label="Ideal month" value="September 2026" />
+        <Field label="Who should be in the room" value="Founders & investors across MENA" />
+        <Field label="Anything else" value="Optional notes for the curation team" />
+      </div>
+      <div style={{ position: 'sticky', bottom: 0, padding: `14px ${t.pad}px 30px`, background: hexA(t.bg, 0.92), backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderTop: `1px solid ${t.line2}` }}>
+        <EXButton t={t} size="lg" full onClick={() => setSent(true)}>Submit request</EXButton>
+      </div>
     </div>
   );
 }
@@ -302,4 +394,4 @@ function MemberProfile({ t, params, nav }) {
   );
 }
 
-Object.assign(window, { ScreenTitle, PushHeader, Segmented, SearchBar, EventsScreen, EventDetail, NetworkScreen, MemberProfile, EventCard });
+Object.assign(window, { ScreenTitle, PushHeader, Segmented, SearchBar, EventsScreen, EventDetail, RequestEventScreen, NetworkScreen, MemberProfile, EventCard });

@@ -7,16 +7,6 @@ export default function middleware(request) {
   const expectedUser = process.env.BASIC_AUTH_USER;
   const expectedPass = process.env.BASIC_AUTH_PASS;
 
-  // TEMPORARY diagnostic — reports only presence + length, never the values.
-  if (new URL(request.url).searchParams.has('__authcheck')) {
-    return new Response(JSON.stringify({
-      userSet: typeof expectedUser === 'string' && expectedUser.length > 0,
-      passSet: typeof expectedPass === 'string' && expectedPass.length > 0,
-      userLen: expectedUser ? expectedUser.length : 0,
-      passLen: expectedPass ? expectedPass.length : 0,
-    }), { status: 200, headers: { 'content-type': 'application/json', 'x-robots-tag': 'noindex, nofollow' } });
-  }
-
   const header = request.headers.get('authorization');
   if (header && header.startsWith('Basic ')) {
     const decoded = atob(header.slice(6));
